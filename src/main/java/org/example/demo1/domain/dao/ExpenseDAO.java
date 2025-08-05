@@ -1,6 +1,6 @@
 package org.example.demo1.domain.dao;
 
-import org.example.domain.models.Expenses;
+import org.example.demo1.domain.models.Expenses;
 
 import java.util.List;
 
