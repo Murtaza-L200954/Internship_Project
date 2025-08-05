@@ -11,10 +11,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.Connection;
 import java.util.Base64;
-
+//todo rename monthly budgets, use camel case
 @Path("/login")
 public class LoginResource {
-
+//todo , make function to authenticate user
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -22,7 +22,7 @@ public class LoginResource {
         String email = user.getEmail();
         String password = user.getPassword();
 
-        try(Connection conn = DBUtil.getConnection()){
+        try(Connection conn = DBUtil.getConnection()){ //todo , should be in service class
             UserDAO userDAO = new UserDAOImpl(conn);
             User user1 = userDAO.getUserByEmail(email);
 
