@@ -21,6 +21,12 @@ public class ServiceResponse<T> {
         return new ServiceResponse<>(false, null, message, statusCode);
     }
 
+    public ServiceResponse<T> withStatusCode(int code) {
+        this.statusCode = code;
+        return this;
+    }
+
+
     public boolean isSuccess() {
         return success;
     }

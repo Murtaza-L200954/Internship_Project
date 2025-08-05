@@ -1,17 +1,56 @@
 package org.example.demo1.domain.service;
 
 import org.example.demo1.common.DBUtil;
+import org.example.demo1.common.JWTUtil;
 import org.example.demo1.domain.dao.UserDAO;
 import org.example.demo1.domain.daoImpl.UserDAOImpl;
 import org.example.demo1.domain.dto.ServiceResponse;
 import org.example.demo1.domain.dto.ValidationResult;
 import org.example.domain.models.User;
 
+import javax.ws.rs.core.Response;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Base64;
 
 public class UserService{
+
+    public ServiceResponse<String> login(String email, String password){
+        try{
+            if(email.isEmpty()){
+                return ServiceResponse.error("Username is required",400);
+            }
+
+            if(password.isEmpty()){
+                return ServiceResponse.error("Password is required",400);
+            }
+
+            try(Connection conn = DBUtil.getConnection()){
+                UserDAO userDAO = new UserDAOImpl(conn);
+                User user = userDAO.getUserByEmail(email);
+                if(user == null){
+                    return ServiceResponse.error("User not found",400);
+                }
+
+                String encodedInputPassword = Base64.getEncoder().encodeToString(password.getBytes());
+
+                if(!user.getPassword().equals(encodedInputPassword)){
+                    return ServiceResponse.error("Wrong password",400);
+                }
+
+                String token = JWTUtil.generateToken(user.getEmail(),user.getRole());
+
+                return ServiceResponse.success(token,"Login successful").withStatusCode(200);
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return ServiceResponse.error("Database error: " + e.getMessage(),500);
+            }
+
+        } catch (Exception e) {
+            return ServiceResponse.error("Unexpected Error: " + e.getMessage(),500);
+        }
+    }
 
     public ServiceResponse<User> createUser(User user) {
         try {

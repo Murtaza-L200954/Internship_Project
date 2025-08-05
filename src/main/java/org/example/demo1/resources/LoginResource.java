@@ -4,7 +4,10 @@ import org.example.demo1.common.DBUtil;
 import org.example.demo1.domain.dao.UserDAO;
 import org.example.demo1.domain.daoImpl.UserDAOImpl;
 import org.example.demo1.common.JWTUtil;
+import org.example.demo1.domain.dto.ServiceResponse;
 import org.example.domain.models.User;
+import org.example.demo1.domain.service.UserService;
+import org.example.demo1.domain.dto.LoginRequest;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -15,37 +18,26 @@ import java.util.Base64;
 @Path("/login")
 public class LoginResource {
 //todo , make function to authenticate user
+
+    private final UserService userService = new UserService();
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(User user){
-        String email = user.getEmail();
-        String password = user.getPassword();
+    public Response login(LoginRequest loginRequest) {
+        try{
+            ServiceResponse<String> result = userService.login(loginRequest.getEmail(), loginRequest.getPassword());
 
-        try(Connection conn = DBUtil.getConnection()){ //todo , should be in service class
-            UserDAO userDAO = new UserDAOImpl(conn);
-            User user1 = userDAO.getUserByEmail(email);
+            return Response.status(result.getStatusCode())
+                    .entity(result)
+                    .build();
 
-            if(user1 != null) {
-                String encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
-
-                if(user1.getPassword().equals(encodedPassword)) {
-                    String token = JWTUtil.generateToken(user1.getEmail(),user1.getRole());
-                    String json = "{\"token\":\"" + token + "\"}";
-                    return Response.status(Response.Status.OK).entity(json).build();
-                }
-            }
-            else{
-                return Response.status(Response.Status.UNAUTHORIZED)
-                        .entity("Invalid email or password")
-                        .build();
-            }
         } catch (Exception e) {
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"error\": \"Internal server error\"}")
+                    .entity("Unexpected error, try later")
                     .build();
         }
-        return Response.status(Response.Status.UNAUTHORIZED).build();
     }
+
 }
