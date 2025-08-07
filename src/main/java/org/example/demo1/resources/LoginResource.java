@@ -17,7 +17,6 @@ import java.util.Base64;
 //todo rename monthly budgets, use camel case
 @Path("/login")
 public class LoginResource {
-//todo , make function to authenticate user
 
     private final UserService userService = new UserService();
 
@@ -39,5 +38,4 @@ public class LoginResource {
                     .build();
         }
     }
-
 }

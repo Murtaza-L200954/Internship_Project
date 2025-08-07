@@ -1,4 +1,4 @@
-package org.example.domain.models;
+package org.example.demo1.domain.models;
 
 import java.time.LocalDateTime;
 

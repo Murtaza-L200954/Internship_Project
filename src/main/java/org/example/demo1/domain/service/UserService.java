@@ -15,89 +15,65 @@ import java.util.Base64;
 
 public class UserService{
 
-    public ServiceResponse<String> login(String email, String password){
-        try{
-            if(email.isEmpty()){
-                return ServiceResponse.error("Username is required",400);
-            }
+    public ServiceResponse<String> login(String email, String password) throws SQLException{
 
-            if(password.isEmpty()){
-                return ServiceResponse.error("Password is required",400);
-            }
-
-            try(Connection conn = DBUtil.getConnection()){
-                UserDAO userDAO = new UserDAOImpl(conn);
-                User user = userDAO.getUserByEmail(email);
-                if(user == null){
-                    return ServiceResponse.error("User not found",400);
-                }
-
-                String encodedInputPassword = Base64.getEncoder().encodeToString(password.getBytes());
-
-                if(!user.getPassword().equals(encodedInputPassword)){
-                    return ServiceResponse.error("Wrong password",400);
-                }
-
-                String token = JWTUtil.generateToken(user.getEmail(),user.getRole());
-
-                return ServiceResponse.success(token,"Login successful").withStatusCode(200);
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-                return ServiceResponse.error("Database error: " + e.getMessage(),500);
-            }
-
-        } catch (Exception e) {
-            return ServiceResponse.error("Unexpected Error: " + e.getMessage(),500);
+        if(email.isEmpty()){
+            return ServiceResponse.error("Username is required",400);
         }
+
+        if(password.isEmpty()){
+            return ServiceResponse.error("Password is required",400);
+        }
+        Connection conn = DBUtil.getConnection();
+        UserDAO userDAO = new UserDAOImpl(conn);
+        User user = userDAO.getUserByEmail(email);
+        if(user == null){
+            return ServiceResponse.error("User not found",400);
+        }
+
+        String encodedInputPassword = Base64.getEncoder().encodeToString(password.getBytes());
+
+        if(!user.getPassword().equals(encodedInputPassword)){
+            return ServiceResponse.error("Wrong password",400);
+        }
+
+        String token = JWTUtil.generateToken(user.getEmail(),user.getRole());
+
+        return ServiceResponse.success(token,"Login successful").withStatusCode(200);
     }
 
-    public ServiceResponse<User> createUser(User user) {
-        try {
-            // Validate input
-            ValidationResult validation = validateUserInput(user);
-            if (!validation.isValid()) {
-                return ServiceResponse.error(validation.getErrorMessage(), 400);
-            }
+    public ServiceResponse<User> createUser(User user) throws SQLException {
 
-            // Encode password
-            String encodedPassword = Base64.getEncoder().encodeToString(user.getPassword().getBytes());
-
-            try (Connection conn = DBUtil.getConnection()) {
-                UserDAO userDAO = new UserDAOImpl(conn);
-
-                // Check if email already exists
-                if (userDAO.getUserByEmail(user.getEmail()) != null) {
-                    return ServiceResponse.error("Email already exists", 409);
-                }
-
-                // Validate role
-                if (!isValidRole(user.getRole())) {
-                    return ServiceResponse.error("Invalid role. Valid roles are: user, admin", 400);
-                }
-
-                // Create new user
-                User newUser = new User();
-                newUser.setEmail(user.getEmail());
-                newUser.setPassword(encodedPassword);
-                newUser.setRole(user.getRole());
-
-                boolean userAdded = userDAO.addUser(newUser);
-                if (!userAdded) {
-                    return ServiceResponse.error("Failed to create user due to database error", 500);
-                }
-
-                return ServiceResponse.success(newUser, "User created successfully");
-
-            } catch (SQLException e) {
-                return ServiceResponse.error("Database connection failed: " + e.getMessage(), 500);
-            }
-
-        } catch (Exception e) {
-            return ServiceResponse.error("Unexpected error occurred: " + e.getMessage(), 500);
+        ValidationResult validation = validateUserInput(user);
+        if (!validation.isValid()) {
+            return ServiceResponse.error(validation.getErrorMessage(), 400);
         }
-    }
 
+        String encodedPassword = Base64.getEncoder().encodeToString(user.getPassword().getBytes());
+
+        Connection conn = DBUtil.getConnection();
+        UserDAO userDAO = new UserDAOImpl(conn);
+
+        if (userDAO.getUserByEmail(user.getEmail()) != null) {
+            return ServiceResponse.error("Email already exists", 409);
+        }
+
+        if (!isValidRole(user.getRole())) {
+            return ServiceResponse.error("Invalid role. Valid roles are: user, admin", 400);
+        }
+
+        User newUser = new User();
+        newUser.setEmail(user.getEmail());
+        newUser.setPassword(encodedPassword);
+        newUser.setRole(user.getRole());
+
+        boolean userAdded = userDAO.addUser(newUser);
+        if (!userAdded) {
+            return ServiceResponse.error("Failed to create user due to database error", 500);
+        }
+
+        return ServiceResponse.success(newUser, "User created successfully");
+    }
 
     private ValidationResult validateUserInput(User user) {
         if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
