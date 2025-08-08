@@ -1,5 +1,7 @@
 package org.example.demo1.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,11 +12,18 @@ public class Expenses {
     private int user_id;
     private double amount;
     private int category_id;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+
     private Date expense_date;
     private String notes;
     //private String file_path;
     private boolean is_recurring;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private Timestamp createdAt;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     private Timestamp updatedAt;
 
     public Expenses() {}

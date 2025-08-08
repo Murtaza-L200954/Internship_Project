@@ -73,4 +73,22 @@ public class CategoryResource {
                   .build();
       }
     }
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/getall")
+    public Response getCategories() {
+        try {
+            ServiceResponse<List<Categories>> result = categoriesService.getallCategories();
+
+            return Response.status(result.getStatusCode())
+                    .entity(result)
+                    .build();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Unexpected error, try later")
+                    .build();
+        }
+    }
 }

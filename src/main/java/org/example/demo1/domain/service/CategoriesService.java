@@ -9,6 +9,7 @@ import org.example.demo1.domain.models.Categories;
 import javax.ws.rs.core.Response;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 public class CategoriesService {
 
@@ -70,6 +71,21 @@ public class CategoriesService {
                     .withStatusCode(Response.Status.OK.getStatusCode());
         } else {
             return ServiceResponse.error("Category not found or delete failed",
+                    Response.Status.NOT_FOUND.getStatusCode());
+        }
+    }
+
+    public ServiceResponse<List<Categories>> getallCategories() throws SQLException {
+        Connection conn = DBUtil.getConnection();
+        CategoriesDAO categoriesDAO = new CategoriesDAOImpl(conn);
+
+        List<Categories> categories = categoriesDAO.getAllCategories();
+
+        if (categories != null && !categories.isEmpty()) {
+            return ServiceResponse.success(categories, "Categories retrieved successfully")
+                    .withStatusCode(Response.Status.OK.getStatusCode());
+        } else {
+            return ServiceResponse.error("No categories found",
                     Response.Status.NOT_FOUND.getStatusCode());
         }
     }
