@@ -1,9 +1,9 @@
-package org.example.domain.models;
+package org.example.demo1.domain.models;
 
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 
-public class Monthly_budgets {
+public class MonthlyBudgets {
     private int id;
     private int user_id;
     private YearMonth month_year;
@@ -12,7 +12,7 @@ public class Monthly_budgets {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Monthly_budgets() {}
+    public MonthlyBudgets() {}
 
     public int getId() {
         return id;

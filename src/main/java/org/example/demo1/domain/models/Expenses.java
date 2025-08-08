@@ -1,20 +1,30 @@
-package org.example.domain.models;
+package org.example.demo1.domain.models;
 
-import java.math.BigDecimal;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.sql.Date;
 
 public class Expenses {
     private int id;
     private int user_id;
     private double amount;
     private int category_id;
-    private LocalDate expense_date;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+
+    private Date expense_date;
     private String notes;
-    private String file_path;
+    //private String file_path;
     private boolean is_recurring;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    private Timestamp createdAt;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
+    private Timestamp updatedAt;
 
     public Expenses() {}
 
@@ -34,7 +44,7 @@ public class Expenses {
         this.user_id = user_id;
     }
 
-    public BigDecimal getAmount() {
+    public double getAmount() {
         return amount;
     }
 
@@ -50,21 +60,21 @@ public class Expenses {
         this.category_id = category_id;
     }
 
-    public LocalDate getExpense_date() {
+    public Date getExpense_date() {
         return expense_date;
     }
 
-    public void setExpense_date(LocalDate expense_date) {
+    public void setExpense_date(Date expense_date) {
         this.expense_date = expense_date;
     }
 
-    public String getFile_path() {
-        return file_path;
-    }
+    //public String getFile_path() {
+    //    return file_path;
+    // }
 
-    public void setFile_path(String file_path) {
-        this.file_path = file_path;
-    }
+   // public void setFile_path(String file_path) {
+   //     this.file_path = file_path;
+   // }
 
     public String getNotes() {
         return notes;
@@ -82,19 +92,19 @@ public class Expenses {
         this.is_recurring = is_recurring;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Timestamp getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
+    public Timestamp getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
+    public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
 }
