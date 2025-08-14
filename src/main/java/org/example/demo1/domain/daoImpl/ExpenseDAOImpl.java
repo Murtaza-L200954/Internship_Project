@@ -121,4 +121,32 @@ public class ExpenseDAOImpl implements ExpenseDAO {
             return false;
         }
     }
+
+    @Override
+    public List<Expenses> getAllExpensesByUserId(int userId)  {
+        List<Expenses> expenses = new ArrayList<>();
+        String query = "SELECT * FROM expenses WHERE user_id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Expenses expense = new Expenses();
+                expense.setId(rs.getInt("id"));
+                expense.setUser_id(rs.getInt("user_id"));
+                expense.setAmount(rs.getDouble("amount"));
+                expense.setCategory_id(rs.getInt("category_id"));
+                expense.setExpense_date(rs.getDate("expense_date"));
+                expense.setNotes(rs.getString("notes"));
+                expense.setIs_recurring(rs.getBoolean("is_recurring"));
+                expense.setCreatedAt(rs.getTimestamp("created_at"));
+                expense.setUpdatedAt(rs.getTimestamp("updated_at"));
+                expenses.add(expense);
+            }
+        } catch(SQLException e){
+            e.printStackTrace();
+        }
+        return expenses;
+    }
 }

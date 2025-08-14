@@ -14,7 +14,6 @@ public class Expenses {
     private int category_id;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-
     private Date expense_date;
     private String notes;
     //private String file_path;

@@ -2,6 +2,7 @@ package org.example.demo1.resources;
 
 import org.example.demo1.domain.models.Expenses;
 import org.example.demo1.domain.dto.ServiceResponse;
+import org.example.demo1.domain.service.EnhancedExpenseService;
 import org.example.demo1.domain.service.ExpenseService;
 
 import javax.ws.rs.*;
@@ -13,6 +14,7 @@ import java.util.List;
 public class ExpenseResource {
 
     private final ExpenseService expenseService = new ExpenseService();
+    private final EnhancedExpenseService enhancedExpenseService = new EnhancedExpenseService();
 
     @POST
     @Path("/add")
@@ -20,7 +22,7 @@ public class ExpenseResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response addExpense(Expenses expense) {
         try {
-            ServiceResponse<String> result = expenseService.addExpense(expense);
+            ServiceResponse<String> result = enhancedExpenseService.addExpense(expense);
 
             return Response.status(result.getStatusCode())
                     .entity(result)
