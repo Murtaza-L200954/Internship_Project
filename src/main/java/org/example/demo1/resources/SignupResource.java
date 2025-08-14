@@ -3,6 +3,8 @@ package org.example.demo1.resources;
 import org.example.demo1.common.DBUtil;
 import org.example.demo1.domain.dao.UserDAO;
 import org.example.demo1.domain.daoImpl.UserDAOImpl;
+import org.example.demo1.domain.dto.ServiceResponse;
+import org.example.demo1.domain.service.UserService;
 import org.example.domain.models.User;
 
 import javax.ws.rs.*;
@@ -15,59 +17,29 @@ import java.util.Base64;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class SignupResource {
+    private final UserService userService = new UserService();
 
     @POST
-    public Response Signup(User user){
-        String email = user.getEmail();
-        String password = user.getPassword();
-        String role = user.getRole();
+    public Response signup(User user) {
+        try {
+            ServiceResponse<User> result = userService.createUser(user);
 
-        if(email.isEmpty() || password.isEmpty() || role.isEmpty()){
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Please fill all the fields")
-                    .build();
-        }
-
-        String encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
-
-        try(Connection conn = DBUtil.getConnection()){
-            UserDAO userDAO = new UserDAOImpl(conn);
-
-            if(userDAO.getUserByEmail(email) != null){
-                return Response.status(Response.Status.CONFLICT)
-                        .entity("Email already exists")
-                        .build();
-            }
-
-            if(!role.equals("user") && !role.equals("admin")){
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("VALID ROLES ARE user and admin ")
-                        .build();
-            }
-
-            User newUser = new User();
-            newUser.setEmail(email);
-            newUser.setPassword(encodedPassword);
-            newUser.setRole(role);
-
-            boolean userAdded = userDAO.addUser(newUser);
-            if(!userAdded){
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                        .entity("Failed to create user")
-                        .build();
-            }
-            else{
+            if (result.isSuccess()) {
                 return Response.status(Response.Status.CREATED)
-                        .entity("Successfully created user")
+                        .entity(result.getMessage())
+                        .build();
+            } else {
+                return Response.status(result.getStatusCode())
+                        .entity(result.getMessage())
                         .build();
             }
 
         } catch (Exception e) {
+            // todo Log the exception properly (use a logger in real applications)
             e.printStackTrace();
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Failed to get connection")
+                    .entity("An unexpected error occurred. Please try again later.")
                     .build();
         }
     }
-
 }

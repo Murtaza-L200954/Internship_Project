@@ -1,18 +1,24 @@
-package org.example.domain.models;
+package org.example.demo1.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.sql.Date;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 
-public class Monthly_budgets {
+public class MonthlyBudgets {
     private int id;
     private int user_id;
-    private YearMonth month_year;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM")
+    private Date month_year;
+
     private double salary;
     private double budget_limit;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public Monthly_budgets() {}
+    public MonthlyBudgets() {}
 
     public int getId() {
         return id;
@@ -30,11 +36,11 @@ public class Monthly_budgets {
         this.user_id = user_id;
     }
 
-    public YearMonth getMonth_year() {
+    public Date getMonth_year() {
         return month_year;
     }
 
-    public void setMonth_year(YearMonth month_year) {
+    public void setMonth_year(Date month_year) {
         this.month_year = month_year;
     }
 
